@@ -20,15 +20,22 @@ function generateRandomString(length) {
         result += characters.charAt(Math.floor(Math.random() * charactersLength));
     }
     return result;
-}
+} //creating a function to generate 6randomletter
 console.log(generateRandomString(6));
 
-app.post("/urls", (req, res) => {
-  console.log(req.body);
-  const shortURL = generateRandomString(6)
-  const longURL = req.body.longURL
-  urlDatabase[shortURL] = longURL
+app.post("/urls/:shortURL/delete", (req, res) => {
+  let shortURL = req.params.shortURL;
+  delete urlDatabase[shortURL];
   res.redirect("/urls")
+});
+
+
+app.post("/urls", (req, res) => {
+  console.log(req.body);//req.body= whatever client is requesting from browser to server
+  const shortURL = generateRandomString(6)//shortURL a new box to our function result be in there
+  const longURL = req.body.longURL
+  urlDatabase[shortURL] = longURL//changing the urlDatabase to a objec which has a key(shortURL) and value(longURL)
+  res.redirect("/urls")//redirect the initial url to the new address
 });
 
 app.get("/urls/new", (req, res) => {
