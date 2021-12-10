@@ -21,9 +21,20 @@ const users = {
 }
 
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  b6UTxQ: {
+      longURL: "https://www.tsn.ca",
+      userID: "aJ48lW"
+  },
+  i3BoGr: {
+      longURL: "https://www.google.ca",
+      userID: "aJ48lW"
+  }
 };
+// const urlDatabase = {
+//   "b2xVn2": "http://www.lighthouselabs.ca",
+//   "9sm5xK": "http://www.google.com"
+// };
+//cookies === user_id
 function checkEmailExist(email, users){
   for (let user in users){
     if(users[user].email === email){
@@ -54,15 +65,19 @@ app.post("/urls", (req, res) => {
   console.log(req.body);//req.body= whatever client is requesting from browser to server
   const shortURL = generateRandomString(6)//shortURL a new box to our function result be in there
   const longURL = req.body.longURL
-  urlDatabase[shortURL] = longURL//changing the urlDatabase to a objec which has a key(shortURL) and value(longURL)
+  urlDatabase[shortURL] = {"longURL":longURL, "userID": req.cookies["user_id"]}//changing the urlDatabase to a objec which has a key(shortURL) and value(longURL)
   res.redirect("/urls")//redirect the initial url to the new address
 });
 
 
 
 app.get("/urls/new", (req, res) => {
+  const userCookie = req.cookies["user_id"]//getting the cookie information when someone is not login(part) for identification
+  if (!userCookie) {
+    return res.redirect("/login") ;
+  }
   const templateVars = { urls: urlDatabase, username: req.cookies["user_id"]};
-  res.render("urls_new", templateVars);
+  res.render("urls_new", templateVars)
 });
 
 app.get("/urls", (req, res) => {
@@ -80,7 +95,8 @@ app.get("/urls/:shortURL", (req, res) => {
 app.post("/urls/:shortURL", (req, res) => {// params = parameters = what's in the address bar
   const shortURL = req.params.shortURL; // body = form data = what the user inputs
   const longURL = req.body.longURL;
-  urlDatabase[shortURL] = longURL;
+  //urlDatabase[shortURL] = longURL;
+  urlDatabase[shortURL] = {"longURL":longURL, "userID": req.cookies["user_id"]}
   res.redirect("/urls") 
 });
 
@@ -147,7 +163,10 @@ app.get("/urls.json", (req, res) => {
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  const longURL = urlDatabase[req.params.shortURL]//.longURL
+  const longURL = urlDatabase[req.params.shortURL] ? urlDatabase[req.params.shortURL].longURL : null// if longurl is avalable for accecing to the longurl as link // : null === else
+  if (!longURL) {
+    return res.status(404).send("shortURL not found")
+  }
   res.redirect(longURL);
 });
 
