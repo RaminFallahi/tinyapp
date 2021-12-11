@@ -61,6 +61,15 @@ function generateRandomString(length) { //creating a function to generate 6rando
     return result;
 }
 
+const urlsForUser = function(id, urlDatabase) {
+  const urls = {}
+  for (let key in urlDatabase) {
+    if (urlDatabase[key].userID === id) {
+      urls[key] = urlDatabase[key]
+    }
+  } return urls
+}
+
 app.post("/urls", (req, res) => {
   console.log(req.body);//req.body= whatever client is requesting from browser to server
   const shortURL = generateRandomString(6)//shortURL a new box to our function result be in there
@@ -69,14 +78,15 @@ app.post("/urls", (req, res) => {
   res.redirect("/urls")//redirect the initial url to the new address
 });
 
-
-
 app.get("/urls/new", (req, res) => {
   const userCookie = req.cookies["user_id"]//getting the cookie information when someone is not login(part) for identification
   if (!userCookie) {
     return res.redirect("/login") ;
   }
-  const templateVars = { urls: urlDatabase, username: req.cookies["user_id"]};
+  const templateVars = {
+    urls: urlDatabase, 
+    username: req.cookies["user_id"]
+  };
   res.render("urls_new", templateVars)
 });
 
@@ -85,6 +95,7 @@ app.get("/urls", (req, res) => {
   const templateVars = { urls: urlDatabase, username: req.cookies["user_id"]};
   res.render("urls_index", templateVars);
 });
+
 
 app.get("/urls/:shortURL", (req, res) => {
   const templateVars = {username: req.cookies["user_id"], shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL]};
@@ -101,10 +112,15 @@ app.post("/urls/:shortURL", (req, res) => {// params = parameters = what's in th
 });
 
 app.post("/urls/:shortURL/delete", (req, res) => {
-  console.log("dosent matter")
+  const usercookies = req.cookies["user_id"]
   let shortURL = req.params.shortURL;
-  delete urlDatabase[shortURL];
-  res.redirect("/urls")
+  const usersURL = urlDatabase[shortURL] && urlDatabase[shortURL].userID === usercookies
+  if (usersURL){
+    delete urlDatabase[shortURL];
+    res.redirect("/urls")
+    return 
+  }
+  res.render("error_url")
 });
 
 //creat a route for user to register
