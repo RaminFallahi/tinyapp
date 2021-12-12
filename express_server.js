@@ -91,8 +91,10 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  console.log(req.cookies["user_id"])
-  const templateVars = { urls: urlDatabase, username: req.cookies["user_id"]};
+  console.log(req.cookies["user_id"]);
+  const userId = req.cookies["user_id"];
+  const userURLs = urlsForUser(userId, urlDatabase);
+  const templateVars = { urls: userURLs, username: req.cookies["user_id"]};
   res.render("urls_index", templateVars);
 });
 
@@ -112,10 +114,10 @@ app.post("/urls/:shortURL", (req, res) => {// params = parameters = what's in th
 });
 
 app.post("/urls/:shortURL/delete", (req, res) => {
-  const usercookies = req.cookies["user_id"]
-  let shortURL = req.params.shortURL;
-  const usersURL = urlDatabase[shortURL] && urlDatabase[shortURL].userID === usercookies
-  if (usersURL){
+  const userCookie = req.cookies["user_id"]
+  const shortURL = req.params.shortURL;
+  const usersHasURL = urlDatabase[shortURL] && urlDatabase[shortURL].userID === userCookie
+  if (usersHasURL){
     delete urlDatabase[shortURL];
     res.redirect("/urls")
     return 
