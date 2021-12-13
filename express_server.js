@@ -40,38 +40,8 @@ const urlDatabase = {
       userID: "aJ48lW"
   }
 };
-// const urlDatabase = { // our initial urlDatabase
-//   "b2xVn2": "http://www.lighthouselabs.ca",
-//   "9sm5xK": "http://www.google.com"
-// };
-//cookies === user_id
 
 const {checkEmailExist, getUser, checkPasswordExist, generateRandomString, urlsForUser} = require("./helper")
-
-
-
-
-
-// const getUserByEmail = function(email, database) {
-//   for (let user in users) {
-//     if (users[user].email === email){
-//       return user;
-//     }
-//   }
-// };
-
-
-
-
-
-
-// const getUserByEmail = function(email, database) {
-//   const final = 0
-//   for (let user = 0; user < length; user++) {
-//     if ()
-//   }
-//   return user;
-// };
 
 app.post("/urls", (req, res) => {
   console.log(req.body);//req.body= whatever client is requesting from browser to server
