@@ -46,48 +46,24 @@ const urlDatabase = {
 // };
 //cookies === user_id
 
-function getUser (email) {
-  for (let user in users) {
-    if (users[user].email === email) {
-      return users[user]
-    }
-  }
-}
+const {checkEmailExist, getUser, checkPasswordExist, generateRandomString, urlsForUser} = require("./helper")
 
-function checkEmailExist(email, users){
-  for (let user in users){
-    if(users[user].email === email){
-      return users[user]
-    }
-  }
-  return false
-}
-function checkPasswordExist(password, users){
-  for (let user in users){
-    if(users[user].password === password){
-      return true
-    }
-  }
-  return false
-}
-function generateRandomString(length) { //creating a function to generate 6randomletter
-  const characters ='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-    let result = ' ';
-    const charactersLength = characters.length;
-    for ( let i = 0; i < length; i++ ) {
-        result += characters.charAt(Math.floor(Math.random() * charactersLength));
-    }
-    return result;
-}
 
-const urlsForUser = function(id, urlDatabase) {
-  const urls = {}
-  for (let key in urlDatabase) {
-    if (urlDatabase[key].userID === id) {
-      urls[key] = urlDatabase[key]
-    }
-  } return urls
-}
+
+
+
+// const getUserByEmail = function(email, database) {
+//   for (let user in users) {
+//     if (users[user].email === email){
+//       return user;
+//     }
+//   }
+// };
+
+
+
+
+
 
 // const getUserByEmail = function(email, database) {
 //   const final = 0
@@ -189,7 +165,7 @@ app.get("/login", (req, res) => {
 app.post("/login", (req, res) => {
   const email = req.body.email
   const password = req.body.password
-  const userFromDataBase = getUser(email);////with the email from the request looping through the database for user object
+  const userFromDataBase = getUser(email, users);////with the email from the request looping through the database for user object
   const passwordFromDataBase = userFromDataBase.password;  //comparing the password in userobject(hashpasword)
   const isPasswordCorrect = bcrypt.compareSync(password, passwordFromDataBase);//for comparing hashed passwords in login
   const userId = generateRandomString(6)
@@ -228,4 +204,6 @@ app.get("/u/:shortURL", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
+
+
 
